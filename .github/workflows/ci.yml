@@ -1,0 +1,62 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+# Least privilege: the workflow can read the code and nothing else.
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      # Every action is pinned to a full commit SHA; Dependabot proposes updates.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
+        with:
+          distribution: temurin
+          java-version: "21"
+          cache: maven
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: "24"
+          cache: npm
+          cache-dependency-path: js/package-lock.json
+      - run: make ci
+      - name: Scheduling experiments (printed to the job summary)
+        run: make scheduling | tee -a "$GITHUB_STEP_SUMMARY"
+      - name: Known-vulnerability audit
+        run: make audit
+
+  # The same Python suite on the free-threaded build, where threads really run in parallel.
+  python-free-threaded:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.14t"
+      - name: Install
+        run: cd python && python -m pip install -e . pytest pytest-timeout
+      - name: Confirm the GIL is off
+        run: python -c "import sys; assert not sys._is_gil_enabled(), 'GIL is enabled'; print(sys.version)"
+      - name: Test
+        run: cd python && python -m pytest -q
+      - name: Scheduling experiments
+        run: cd python && python -m concurrency_across_runtimes.scheduling | tee -a "$GITHUB_STEP_SUMMARY"

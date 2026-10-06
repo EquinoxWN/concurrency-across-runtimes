@@ -1,0 +1,19 @@
+{
+  "name": "concurrency-across-runtimes",
+  "version": "0.1.0",
+  "private": true,
+  "description": "The bugs that only show up in production under load: the same concurrency problems solved in Java, Python and JS, showing how each runtime really schedules work.",
+  "type": "module",
+  "scripts": {
+    "test": "node --test --test-timeout=60000 \"test/*.test.js\"",
+    "lint": "tsc -p tsconfig.json",
+    "scheduling": "node src/scheduling.js"
+  },
+  "engines": {
+    "node": ">=24"
+  },
+  "devDependencies": {
+    "@types/node": "24.19.1",
+    "typescript": "7.0.2"
+  }
+}

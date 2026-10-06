@@ -1,0 +1,31 @@
+{
+  "bounded_buffer": {
+    "capacity": 4,
+    "producers": 4,
+    "consumers": 3,
+    "items_per_producer": 2000
+  },
+  "worker_pool": {
+    "workers": 4,
+    "queue_capacity": 16,
+    "tasks": 200,
+    "task_ms": 2
+  },
+  "pipeline": {
+    "items": 2000,
+    "queue_capacity": 8,
+    "workers": {"parse": 2, "square": 4, "format": 2},
+    "fail_at": 1234,
+    "early_stop_items": 200000
+  },
+  "cache": {
+    "concurrent_requests": 64,
+    "load_ms": 50,
+    "capacity": 3
+  },
+  "philosophers": {
+    "count": 5,
+    "meals": 200,
+    "timeout_ms": 300
+  }
+}
