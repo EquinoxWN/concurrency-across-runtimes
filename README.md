@@ -52,6 +52,12 @@ _Steps 1 and 2 are built and tested (M1); the rest is on the [roadmap](#roadmap)
 5. Throughput and latency are measured as cores increase, showing where locks contend and which model scales.
 6. The write-up explains the Java memory model, and how the GIL or a single-threaded event loop changes the design.
 
+## Who it helps
+
+- **Who:** Developers who move between Java, Python and JavaScript, or who are chasing a concurrency bug.
+- **The problem:** The same pattern (a bounded buffer, a worker pool) behaves differently on threads, an event loop or under the GIL, and those differences cause real bugs.
+- **How to use it:** Read the five problems solved side by side in each runtime and run the tests, which check every solution against the same invariants.
+
 ## Tech stack
 
 | Area | In M1 | Planned |
