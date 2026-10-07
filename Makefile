@@ -1,3 +1,6 @@
+# OSV-Scanner (https://google.github.io/osv-scanner/) checks every resolved Maven dependency.
+OSV ?= osv-scanner
+
 .PHONY: setup lint test scheduling bench audit ci
 
 # PY is the Python to use (the repo's .venv locally, setup-python's in CI); MVNLOCAL (set by the
@@ -30,9 +33,11 @@ scheduling:
 bench:
 	@echo "M3: throughput and latency per problem as cores increase (JMH, pyperf, mitata)"
 
-# Known vulnerabilities in Python and npm dependencies (Java: Dependabot alerts).
+# Known vulnerabilities in Python, npm and Maven dependencies.
 audit:
 	cd python && $(PY) -m pip_audit --skip-editable --cache-dir ../.tmp/pip-audit
 	cd js && npm audit --audit-level=high
+	cd java && mvn -B -q org.cyclonedx:cyclonedx-maven-plugin:2.9.3:makeAggregateBom -DoutputFormat=json -DoutputName=bom -DincludeTestScope=true
+	$(OSV) scan source -L java/target/bom.json
 
 ci: setup lint test

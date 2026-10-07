@@ -184,7 +184,7 @@ This is a learning and portfolio system, not a hosted production service. Everyt
 
 - Every GitHub Action is pinned to a commit SHA; workflows run read-only, without persisted credentials.
 - Dependabot proposes dependency and action updates weekly.
-- CI runs `pip-audit` and `npm audit` on every push (Java dependencies are covered by Dependabot alerts), and every test suite has a timeout so a deadlock fails the build instead of hanging it.
+- CI runs `pip-audit` and `npm audit` on every push (and OSV-Scanner on a CycloneDX SBOM of the Java dependencies), and every test suite has a timeout so a deadlock fails the build instead of hanging it.
 - Report vulnerabilities privately: see [SECURITY.md](SECURITY.md). To contribute, see [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## License
